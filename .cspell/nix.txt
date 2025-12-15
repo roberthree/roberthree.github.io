@@ -1,0 +1,8 @@
+cachix
+direnv
+nixfmt
+nixpkgs
+numtide
+pkgs
+pname
+stdenv
