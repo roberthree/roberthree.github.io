@@ -1,5 +1,6 @@
 cachix
 direnv
+dont
 nixfmt
 nixpkgs
 numtide

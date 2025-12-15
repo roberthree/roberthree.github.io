@@ -1,0 +1,296 @@
+---
+title: "Planning Complexity with Story Points"
+
+subtitle: "Why Ideal Hours Are an Anti-Pattern"
+author: "Robert Three"
+date: "01 December 2025"
+categories: ["software development"]
+
+format:
+  html:
+    code-fold: true
+---
+
+In software development, stakeholders almost always require a forecast for the implementation of new features modeled via a set of distinct [(user) stories](https://en.wikipedia.org/wiki/User_story).
+They ask: "When will it be done?".
+On the other hand, this is the only thing that matters during planning: Can I answer this question with sufficient accuracy?
+
+Traditionally, teams attempt to estimate stories in ideal hours based on individual developer capacity.
+However, this approach is flawed for several reasons:
+
+- _Skill variance_\
+  A senior developer may complete a task in 2 hours that takes a junior developer 10 hours. If we estimate in hours, the estimate depends entirely on who does the work, which is often unknown at planning time.
+- _[Planning fallacy](https://en.wikipedia.org/wiki/Planning_fallacy)_\
+  Humans notoriously underestimate the time required to complete complex tasks, failing to account for interruptions, context switching, and unforeseen dependencies.\
+  (see also ["Thinking, Fast and Slow" (2011) by Daniel Kahneman](https://en.wikipedia.org/wiki/Thinking,_Fast_and_Slow))
+- _[Brooks's law](https://en.wikipedia.org/wiki/Brooks%27s_law)_\
+  Thinking in hours often neglects the fact that most of the time there is no linear relationship between people-hours and complexity-output
+
+To circumvent these problems, the team should stop estimating _time_, which may vary based on who does the work, and start estimating _complexity_, which should remain constant regardless of the worker.
+
+## Story points: A measure of complexity
+
+**Story points** are a relative unit of measure used to estimate the total effort required to fully implement a story.
+Crucially, story points should never be treated as a proxy for hours.
+They are a combination of three factors:
+
+- _Complexity_ (How difficult is the problem?)\
+  E.g., A complex algorithm is harder than a simple [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operation.
+- _Volume_ (How much is there to do?)\
+  E.g., Changing a simple pattern in many files is low complexity but high volume.
+- _Uncertainty_ (What do we not know?)\
+  E.g., Integrating with a legacy 3rd party API carries high risk compared to internal code.
+
+To prevent false precision, teams should use a non-linear scale, e.g., the [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_sequence) (1, 2, 3, 5, 8, 13, ...) or [powers of two](https://en.wikipedia.org/wiki/Power_of_two) (1, 2, 4, 8, 16, 32, ...).
+Non-linear scaling aligns well with the [Weber–Fechner law](https://en.wikipedia.org/wiki/Weber%E2%80%93Fechner_law), which suggests that our ability to distinguish differences decreases as the magnitude increases.
+We can easily tell the difference between a 1-point and a 2-point story, but distinguishing a 20 from a 21 is cognitively impossible.
+The gaps in the mentioned sequences force decisive categorization.
+The team may even reduce the set of story points, to move the focus from story estimation to story refinement.
+
+To ensure the complexity level is well-defined, the team must identify one or multiple reference/baseline stories, which are arbitrarily assigned 2 story points.
+All future stories are compared against these references:
+"Is this new story roughly the same size as the reference? Or is it twice as hard?".
+
+## Velocity: A measure of historical performance
+
+**Velocity** is an empirical measure of the amount of work a team can tackle during a single development iteration with a given coarse capacity, where full capacity is equal to 100% with respect to a normal iteration duration.
+It is calculated historically, not theoretically.
+At the end of an iteration all story points of stories that met the acceptance criteria are summed up and are related to the Team's capacity of this iteration:
+
+$$\text{Velocity} = \frac{\text{Sum of story points of completed stories}}{\text{Team's coarse capacity}}$$
+
+Please note, this is a capacity-adjusted definition of velocity.
+When other resources talk about velocity, they often only mean the "Sum of story points of completed stories".
+However, it makes sense to include well-known boundary conditions (iteration duration, vacation, etc.).
+If half of the team is not working or the iteration duration is halved, there is no reason to ignore this fact.
+However, it is important to keep the capacity factor coarse to avoid the early mentioned problems (Skill variance or Brooks's law).
+
+After a few iterations the team is ready to make a reasonable forecast for the next iteration, assuming for a moment story point estimations have been correct.
+Averaging over the most recent velocities, the next iteration's possible story points is given by:
+
+$$\text{Possible story points} = \text{Mean velocity of recent iterations} \times \text{Team's anticipated coarse capacity}$$
+
+## Retrospective: Improving accuracy of estimations
+
+After an iteration the team may realize that they accomplished less story points than planned.
+There are three reasons why this may have happened:
+
+- Unforeseen interruptions occurred during the iteration\
+  $\to$ no further actions are required as the team's velocity got impacted
+- Stories may have been estimated with a wrong number of story points\
+  $\to$ Such stories should be identified, analyzed and generic rules should be derived
+  - For example, this could be due to a general underestimation of certain tasks, or a misinterpretation of the acceptance criteria.
+  - Derived rules should be applicable to many of other stories.
+  - Always refer to the team's reference stories if you are discussing complexity.
+- Team's velocity has been overestimated and is automatically adapted in future iteration plannings
+
+⚠️ **Future planning is meaningless without a retrospective on estimation accuracy!**
+
+## When will it be done?
+
+Recapitulation of previous sections:
+
+- **Story points:** The team estimates the complexity of stories, not the duration.
+- **Velocity:** The team evaluates accomplishable complexity over time via past performances.
+- **Retrospective:** The team analyzes discrepancies between planned and accomplished complexity.
+
+If the team has a high confidence in their recent velocity history and story estimation skills then it is now possible to come back to the initial question: "When will it be done?".
+Or more precisely, when will a number of planned story points be done?
+
+```{ojs}
+//| echo: false
+
+viewof planned_story_points = assignLabelWidth(
+  Inputs.range(
+    [0, 1000],
+    {
+      transform: Math.log,
+      step: 1,
+      value: 100,
+      label: "Planned story points",
+    }
+  ),
+)
+```
+
+Since we do not know the velocities of upcoming iterations, we have to provide a probability distribution based on the given knowledge.
+While [bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) from observed velocities is ideal, new teams often lack data.
+In the case where data is scarce, another simple technique is the [three-point estimation](https://en.wikipedia.org/wiki/Three-point_estimation).
+Since the uncertainty of the real distribution is high, it is reasonable to assume a simple [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution).
+The team must define three points for their future velocity:
+
+```{ojs}
+//| echo: false
+
+function createVelocityInput() {
+  let m = Inputs.range(domain, {step: 1, value: 20, label: "Most likely velocity"});
+  let a = Inputs.range(domain, {step: 1, value: 0, label: "Worst-case velocity"});
+  let b = Inputs.range(domain, {step: 1, value: 25, label: "Best-case velocity"});
+  return {
+    a: assignLabelWidth(a),
+    m: assignLabelWidth(m),
+    b: assignLabelWidth(b),
+  }
+}
+
+viewof triangular = Inputs.form(createVelocityInput())
+
+isVelocityInputValid = () => (triangular.a <= triangular.m) && (triangular.m <= triangular.b);
+
+function ifValidVelocityInput(operation) {
+  if (isVelocityInputValid()) {
+    return operation()
+  } else {
+    return html`<div style="color:red; font-weight:bold;">
+      ⚠️ Invalid velocity input (worst-case ≤ most-likely ≤ best-case)
+    </div>`;
+  }
+}
+
+ifValidVelocityInput(() => html``)
+```
+
+This results in a triangular distribution (see @fig-velocity-distribution in @sec-appendix) from which one can draw randomly velocity samples as depicted in @fig-velocity-sampling.
+This approach is helpful if one wants to focus on a small number of recent velocities.
+Another sampling technique is
+
+```{ojs}
+//| label: fig-velocity-sampling
+//| fig-cap: "Random velocities of the team based on the given distribution"
+//| echo: false
+
+ifValidVelocityInput(() => pachinko(drawTriangular, domain))
+```
+
+Based on this sampling the team can simulate the number of iterations they need to accomplish all planned story points with a [Monte Carlo method](https://en.wikipedia.org/wiki/Monte_Carlo_method):
+New iterations are simulated with a randomly sampled velocity until all story points are accomplished.
+Repeating this algorithm results in a distribution of possible number of iterations needed for the planned story points as depicted in @fig-forecast.
+
+```{ojs}
+//| label: fig-forecast
+//| fig-cap: "Monte Carlo based forecast of number of iterations needed to accomplish planned story points"
+//| echo: false
+
+ifValidVelocityInput(
+  () => {
+    let domain = [0, 50];
+    let data = Array.from(
+      {length: num_simulations},
+      () => ({needed_iterations: computeNeededIterations()}),
+    );
+    let thresholds = Array.from(
+      {length: domain[1] - domain[0] + 1},
+      (_, i) => domain[0] - 0.5 + i,
+    );
+    return Plot.plot({
+      marks: [
+        Plot.rectY(
+          data,
+          Plot.binX(
+            {y: "count"},
+            {x: "needed_iterations", thresholds},
+          ),
+        ),
+        Plot.ruleY([0]),
+      ],
+      x: {domain, label: "Estimated number of needed iterations"},
+      y: {label: "Amount"},
+      height: 200,
+      width,
+    })
+  }
+)
+```
+
+Depending on the number of Monte Carlo simulation the resulting histogram in @fig-forecast may be less robust.
+
+```{ojs}
+//| echo: false
+
+viewof num_simulations = assignLabelWidth(
+  Inputs.range(
+    [0, 100000],
+    {
+      transform: Math.log,
+      step: 1,
+      value: 10000,
+      label: "Number of simulations",
+    }
+  )
+)
+```
+
+## Further resources
+
+- [Atlassian: Agile project management: Story points and estimation](https://www.atlassian.com/agile/project-management/estimation)
+
+## Appendix {#sec-appendix}
+
+```{ojs}
+//| echo: false
+
+domain = [0, 100]
+
+function triangularPdf(x) {
+  const [a, b, m] = [triangular.a, triangular.b, triangular.m]
+  if (x < a || x > b) return 0;
+  if (x <= m) return 2 * (x - a) / ((b - a) * (m - a));
+  return 2 * (b - x) / ((b - a) * (b - m));
+}
+
+function plotPdf(pdf) {
+  const xs = d3.range(domain[0], domain[1], (domain[1] - domain[0]) / 100)
+  const data = xs.map(x => ({x, y: pdf(x)}))
+
+  return Plot.plot({
+    marks: [
+      Plot.areaY(data, { x: "x", y: "y", opacity: 0.4 }),
+      Plot.line(data, { x: "x", y: "y" })
+    ],
+    x: {domain, label: "Velocity (story points / iteration)"},
+    y: {label: "Distribution Density"},
+    height: 200,
+    width,
+  })
+}
+
+function drawTriangular() {
+  const [a, b, m] = [triangular.a, triangular.b, triangular.m]
+
+  let u = Math.random();
+
+  // https://en.wikipedia.org/wiki/Triangular_distribution#Generating_random_variates
+  if (u < (m - a) / (b - a)) {
+    return a + Math.sqrt(u * (b - a) * (m - a));
+  } else {
+    return b - Math.sqrt((1 - u) * (b - a) * (b - m));
+  }
+}
+
+function computeNeededIterations() {
+  let remaining_story_points = planned_story_points
+  let num_iterations = 0
+
+  while (remaining_story_points > 0) {
+    let velocity = drawTriangular()
+    remaining_story_points -= velocity
+    num_iterations += 1
+  }
+
+  return num_iterations
+}
+
+function assignLabelWidth(input) {
+  return Object.assign(input, {style: '--label-width: 180px'});
+}
+
+import {pachinko} from "@d3/d3-random"
+```
+
+```{ojs}
+//| label: fig-velocity-distribution
+//| fig-cap: "Triangular distribution for the team's velocity"
+//| echo: false
+
+ifValidVelocityInput(() => plotPdf(triangularPdf))
+```

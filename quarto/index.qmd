@@ -3,6 +3,7 @@ title: "Musing in the shade"
 listing:
   - id: thoughts
     categories: true
+    fields: [title, subtitle, author, description, date]
     contents:
       - "thoughts/*.qmd"
 ---

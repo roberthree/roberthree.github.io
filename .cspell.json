@@ -9,12 +9,17 @@
       "addWords": true
     },
     {
+      "name": "observable",
+      "path": "./.cspell/observable.txt",
+      "addWords": true
+    },
+    {
       "name": "project",
       "path": "./.cspell/project.txt",
       "addWords": true
     }
   ],
-  "dictionaries": ["nix", "python", "project"],
+  "dictionaries": ["nix", "observable", "project"],
   "ignoreRegExpList": ["\"[\\w\\.:/]+\""],
   "ignorePaths": ["/.github/**"]
 }

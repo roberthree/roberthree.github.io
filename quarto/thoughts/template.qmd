@@ -1,0 +1,12 @@
+---
+title: "Thought Template"
+subtitle: "Thought subtitle"
+author: "Thought author"
+description: "Thought description"
+date: "01.01.2000"
+categories: ["software development", "society"]
+---
+
+This is an thought template.
+
+Even more template data...
