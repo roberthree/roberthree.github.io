@@ -4,10 +4,12 @@ project:
 website:
   title: "roberthree"
   navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+    tools:
+      - icon: github
+        href: https://github.com/roberthree/roberthree.github.io/
+  reader-mode: true
+  repo-url: https://github.com/roberthree/roberthree.github.io/
+  repo-actions: [edit, source, issue]
 
 format:
   html:

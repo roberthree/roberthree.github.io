@@ -1,7 +1,13 @@
 ---
-title: "roberthree"
+title: "Musing in the shade"
+listing:
+  - id: thoughts
+    categories: true
+    contents:
+      - "thoughts/*.qmd"
 ---
 
-This is a Quarto website.
+This website acts as an organized jumble of thoughts.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+:::{#thoughts}
+:::

@@ -1,0 +1,9 @@
+---
+title: "Projects"
+listing:
+  categories: true
+  contents:
+    - "projects/*.qmd"
+---
+
+About this site

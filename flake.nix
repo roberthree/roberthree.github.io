@@ -58,12 +58,22 @@
           pkgs.writeShellScriptBin "pre-commit-run" script;
 
         packages = {
+          quartoPreview = pkgs.writeShellApplication {
+            name = "quarto-preview";
+            runtimeInputs = with pkgs; [
+              quarto
+              which
+            ];
+            text = ''
+              quarto preview ./quarto
+            '';
+          };
           quartoRender = pkgs.stdenv.mkDerivation {
             pname = "quarto-render";
             version = "1.0.0";
             src = ./quarto;
             nativeBuildInputs = with pkgs; [
-              pkgs.quarto
+              quarto
             ];
             dontInstall = true;
             buildPhase = ''
