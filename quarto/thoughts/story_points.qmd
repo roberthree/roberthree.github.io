@@ -1,7 +1,7 @@
 ---
 title: "Planning Complexity with Story Points"
 
-subtitle: "Why Ideal Hours Are an Anti-Pattern"
+subtitle: "Why Ideal Hours are an Anti-Pattern"
 author: "Robert Three"
 date: "01 December 2025"
 categories: ["software development"]
@@ -11,78 +11,98 @@ format:
     code-fold: true
 ---
 
-In software development, stakeholders almost always require a forecast for the implementation of new features modeled via a set of distinct [(user) stories](https://en.wikipedia.org/wiki/User_story).
-They ask: "When will it be done?".
-On the other hand, this is the only thing that matters during planning: Can I answer this question with sufficient accuracy?
+In software development, stakeholders inevitably demand forecasts for feature implementation, typically modeled via a set of distinct [(user) stories](https://en.wikipedia.org/wiki/User_story).
+The perpetual question — _"When will it be done?"_ — dominates planning.
+For the team, however, the relevant question is not _when_ but _can we answer "when" with statistically significant and repeatable accuracy?_
 
-Traditionally, teams attempt to estimate stories in ideal hours based on individual developer capacity.
-However, this approach is flawed for several reasons:
+Most teams still estimate stories in ideal hours tied to individual developer capacity.
+This approach is fundamentally flawed due to multiple reasons:
 
 - _Skill variance_\
-  A senior developer may complete a task in 2 hours that takes a junior developer 10 hours. If we estimate in hours, the estimate depends entirely on who does the work, which is often unknown at planning time.
+  The same story can take a senior developer two hours and a junior one ten. Hour-based estimates therefore depend on who does the work—information often unknown at planning time.
 - _[Planning fallacy](https://en.wikipedia.org/wiki/Planning_fallacy)_\
-  Humans notoriously underestimate the time required to complete complex tasks, failing to account for interruptions, context switching, and unforeseen dependencies.\
-  (see also ["Thinking, Fast and Slow" (2011) by Daniel Kahneman](https://en.wikipedia.org/wiki/Thinking,_Fast_and_Slow))
-- _[Brooks's law](https://en.wikipedia.org/wiki/Brooks%27s_law)_\
-  Thinking in hours often neglects the fact that most of the time there is no linear relationship between people-hours and complexity-output
+  As detailed in [Daniel Kahneman’s Thinking, Fast and Slow (2011)](https://en.wikipedia.org/wiki/Thinking,_Fast_and_Slow), humans display an optimism bias, consistently underestimating the time required for complex tasks by failing to account for context switching, interruptions, and unforeseen dependencies.
+- _Non-linearity of effort ([Brooks's law](https://en.wikipedia.org/wiki/Brooks%27s_law))_\
+  Time-based thinking assumes a linear relationship between person-hours and output.
+  In reality, software development is a system of complex interdependencies where adding more hours (or people) does not linearly yield more features, often due to communication overhead and integration complexity.
+- _Administrative overhead (time-logging)_\
+  If time is the estimation metric, time-logging for every story is mandatory.
+  This is not only an unnecessary administrative burden but also introduces a systematic source of uncertainty due to human error, logging mistakes, and the ethical dilemma of "billing" internal time.
 
-To circumvent these problems, the team should stop estimating _time_, which may vary based on who does the work, and start estimating _complexity_, which should remain constant regardless of the worker.
+To mitigate these systematic risks, **teams should decouple complexity from time**.
+While time varies based on the worker and the environment, complexity remains an intrinsic property of the problem itself.
 
-## Story points: A measure of complexity
+## Story points: Quantifying complexity
 
-**Story points** are a relative unit of measure used to estimate the total effort required to fully implement a story.
-Crucially, story points should never be treated as a proxy for hours.
-They are a combination of three factors:
+**Story points** are a relative unit of measure used to estimate the total effort required to satisfy a story's acceptance criteria. They **are not a proxy for hours**, but rather a scalar value derived from the inherent properties of the work:
 
-- _Complexity_ (How difficult is the problem?)\
+- _(Technical) Difficulty:_ How hard is the problem?\
   E.g., A complex algorithm is harder than a simple [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operation.
-- _Volume_ (How much is there to do?)\
+- _Volume / Scope:_ How much is there to do?\
   E.g., Changing a simple pattern in many files is low complexity but high volume.
-- _Uncertainty_ (What do we not know?)\
+- _Uncertainty (Risk):_ What do we not know?\
   E.g., Integrating with a legacy 3rd party API carries high risk compared to internal code.
 
-To prevent false precision, teams should use a non-linear scale, e.g., the [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_sequence) (1, 2, 3, 5, 8, 13, ...) or [powers of two](https://en.wikipedia.org/wiki/Power_of_two) (1, 2, 4, 8, 16, 32, ...).
-Non-linear scaling aligns well with the [Weber–Fechner law](https://en.wikipedia.org/wiki/Weber%E2%80%93Fechner_law), which suggests that our ability to distinguish differences decreases as the magnitude increases.
-We can easily tell the difference between a 1-point and a 2-point story, but distinguishing a 20 from a 21 is cognitively impossible.
-The gaps in the mentioned sequences force decisive categorization.
-The team may even reduce the set of story points, to move the focus from story estimation to story refinement.
+To prevent false precision and mitigate cognitive biases, teams utilize non-linear scales, such as the [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_sequence) (1, 2, 3, 5, 8, 13, ...) or [powers of two](https://en.wikipedia.org/wiki/Power_of_two) (1, 2, 4, 8, 16, 32, ...).
+This non-linear scaling is rooted in the [Weber–Fechner law](https://en.wikipedia.org/wiki/Weber%E2%80%93Fechner_law) of psychophysics, which states that “the minimum increase of stimulus which will produce a perceptible increase of sensation is proportional to the pre-existent stimulus”.
+In estimation terms: We can easily distinguish the effort difference between a 1-point and a 2-point story.
+However, distinguishing a 20 from a 21 is cognitively impossible.
+The gaps in the mentioned sequences force decisive categorization, reducing analysis paralysis.
+The team may even drastically reduce the available story points (e.g. (1, 3, 8)), to move the focus from story estimation to story refinement.
 
-To ensure the complexity level is well-defined, the team must identify one or multiple reference/baseline stories, which are arbitrarily assigned 2 story points.
+To ensure the complexity level is well-defined, the team must establish one or multiple reference stories, which are arbitrarily assigned 2 or 3 story points.
 All future stories are compared against these references:
-"Is this new story roughly the same size as the reference? Or is it twice as hard?".
+"Is this new story roughly the same size as the reference? Or is it twice as hard? Half as hard?".
 
-## Velocity: A measure of historical performance
+## Velocity: Empirical Throughput Analysis
 
-**Velocity** is an empirical measure of the amount of work a team can tackle during a single development iteration with a given coarse capacity, where full capacity is equal to 100% with respect to a normal iteration duration.
-It is calculated historically, not theoretically.
-At the end of an iteration all story points of stories that met the acceptance criteria are summed up and are related to the Team's capacity of this iteration:
+**Velocity** measures how much work a team actually completes in one iteration.
+It is an empirical, historical metric — not a theoretical promise — and should be used to translate relative complexity (story points) into probabilistic feature forecasts.
+
+While standard definitions of velocity just take the sum of completed story points, a more robust metric for forecasting is a capacity-adjusted velocity.
+This approach accounts for the volatility of available working hours (vacations, holidays, on-call rotation) without reverting to hour-based estimation if it is kept coarse enough.
+At the end of an iteration all story points of stories that met the acceptance criteria are summed up and are related to the team's capacity of this iteration:
 
 $$\text{Velocity} = \frac{\text{Sum of story points of completed stories}}{\text{Team's coarse capacity}}$$
 
-Please note, this is a capacity-adjusted definition of velocity.
-When other resources talk about velocity, they often only mean the "Sum of story points of completed stories".
-However, it makes sense to include well-known boundary conditions (iteration duration, vacation, etc.).
-If half of the team is not working or the iteration duration is halved, there is no reason to ignore this fact.
-However, it is important to keep the capacity factor coarse to avoid the early mentioned problems (Skill variance or Brooks's law).
+A capacity of 100% represents a full standard iteration.
+However, it is important to keep the capacity factor coarse to avoid the early mentioned problems (skill variance or non-linearity of effort).
+Attempting to calculate capacity down to the hour reintroduces the same errors time-based approaches suffer from.
 
 After a few iterations the team is ready to make a reasonable forecast for the next iteration, assuming for a moment story point estimations have been correct.
-The next iteration's possible story points is given by the multiplication of the mean velocity of recent iterations and the team's anticipated coarse capacity.
+The next iteration's possible story points is given by the the mean velocity of recent iterations ([moving average](https://en.wikipedia.org/wiki/Moving_average)) times the team's anticipated coarse capacity.
 
-## Retrospective: Improving accuracy of estimations
+## Retrospective: Closing the Feedback Loop
+
+⚠️ **Future planning is meaningless without a rigorous retrospective on estimation accuracy!**
 
 After an iteration the team may realize that they accomplished less story points than planned.
 There are three reasons why this may have happened:
 
-- Unforeseen interruptions occurred during the iteration\
-  $\to$ no further actions are required as the team's velocity got impacted
-- Stories may have been estimated with a wrong number of story points\
-  $\to$ Such stories should be identified, analyzed and generic rules should be derived
-  - For example, this could be due to a general underestimation of certain tasks, or a misinterpretation of the acceptance criteria.
-  - Derived rules should be applicable to many of other stories.
-  - Always refer to the team's reference stories if you are discussing complexity.
-- Team's velocity has been overestimated and is automatically adapted in future iteration plannings
+1. _Unforeseen interruptions_\
+  External events (incidents, urgent support, unplanned meetings) reduced available capacity mid-iteration.
+  Record the interruption, treat the original story point estimates as still valid, and adjust the capacity used for future forecasts or ignore this iteration completely.
+  If interruptions are recurring, add a predictable buffer to capacity rather than inflating story points.
+2. _Incorrect story point estimates_\
+  Work consistently takes more or less effort than similar reference stories.
+  Such stories should be identified, analyzed and generic rules should be derived.
+  For example, this could be due to a general underestimation of certain tasks, or a misinterpretation of the acceptance criteria.
+  The derived rules should be applicable to many of other stories.
+3. _Overestimated velocity_\
+  Similar to (1.) this is automatically adapted in future iteration plannings.
 
-⚠️ **Future planning is meaningless without a retrospective on estimation accuracy!**
+## Velocity in the light of Goodhart's law
+
+[Goodhart's law](https://en.wikipedia.org/wiki/Goodhart%27s_law) states:
+
+> _Any observed statistical regularity will tend to collapse once pressure is placed upon it for control purposes._ — Charles Goodhart (1975)
+
+Or in other words:
+
+> _When a measure becomes a target, it ceases to be a good measure._ — Strathern, Marilyn (1997).
+
+Velocity is a calibration tool for planning, not a performance metric for remuneration.
+If teams feel pressured to "increase" velocity, they will simply inflate story point values, rendering the metric useless for meaningful forecasts.
 
 ## When will it be done?
 
@@ -220,6 +240,7 @@ viewof num_simulations = assignLabelWidth(
 
 ## Further resources
 
+- [Wikipedia: Cone of uncertainty](https://en.wikipedia.org/wiki/Cone_of_uncertainty)
 - [Atlassian: Agile project management: Story points and estimation](https://www.atlassian.com/agile/project-management/estimation)
 
 ## Appendix {#sec-appendix}
