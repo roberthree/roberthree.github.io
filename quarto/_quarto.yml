@@ -9,12 +9,17 @@ website:
         href: https://github.com/roberthree/roberthree.github.io/
   reader-mode: true
   repo-url: https://github.com/roberthree/roberthree.github.io/
+  repo-subdir: quarto
   repo-actions: [edit, source, issue]
 
 format:
   html:
     theme:
-      - cosmo
-      - brand
+      light: cosmo
+      dark: solar
+    respect-user-color-scheme: true
+    include-in-header:
+      - text: |
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.min.css">
     css: styles.css
     toc: true
