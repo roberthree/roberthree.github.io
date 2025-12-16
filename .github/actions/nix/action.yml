@@ -1,9 +1,13 @@
 name: Setup Nix
 description: "Install Nix with flakes enabled"
+inputs:
+  github_access_token:
+    description: "GitHub access token to avoid API rate limits"
+    required: true
 runs:
   using: "composite"
   steps:
     - uses: cachix/install-nix-action@v31
       with:
-        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+        github_access_token: ${{ inputs.github_access_token }}
         extra_nix_config: "experimental-features = nix-command flakes"

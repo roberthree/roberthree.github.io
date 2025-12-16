@@ -14,6 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/nix
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check Nix flake
         run: nix flake check --all-systems --print-build-logs --keep-going
@@ -26,6 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/nix
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Quarto webpage
         run: nix build .#quartoRender

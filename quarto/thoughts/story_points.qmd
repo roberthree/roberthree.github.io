@@ -66,9 +66,7 @@ If half of the team is not working or the iteration duration is halved, there is
 However, it is important to keep the capacity factor coarse to avoid the early mentioned problems (Skill variance or Brooks's law).
 
 After a few iterations the team is ready to make a reasonable forecast for the next iteration, assuming for a moment story point estimations have been correct.
-Averaging over the most recent velocities, the next iteration's possible story points is given by:
-
-$$\text{Possible story points} = \text{Mean velocity of recent iterations} \times \text{Team's anticipated coarse capacity}$$
+The next iteration's possible story points is given by the multiplication of the mean velocity of recent iterations and the team's anticipated coarse capacity.
 
 ## Retrospective: Improving accuracy of estimations
 
